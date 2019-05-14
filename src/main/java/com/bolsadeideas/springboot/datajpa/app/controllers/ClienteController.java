@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
-import com.bolsadeideas.springboot.datajpa.app.models.dao.IClienteDao;
+import com.bolsadeideas.springboot.datajpa.app.models.dao.service.IClienteService;
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
 
 @Controller
@@ -24,13 +24,12 @@ import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
 public class ClienteController {
 
 	@Autowired
-	@Qualifier("clienteDaoImplCrudRepository")
-	private IClienteDao clienteDao;
+	private IClienteService clienteServiceImpl;
 
 	@RequestMapping(value = { "/listar" }, method = RequestMethod.GET)
 	public String listar(Model model) {
 		model.addAttribute("titulo", "Listado de clientes");
-		model.addAttribute("clientes", clienteDao.findAll());
+		model.addAttribute("clientes", clienteServiceImpl.findAll());
 		return "listar";
 	}
 
@@ -45,7 +44,7 @@ public class ClienteController {
 	public String editar(@PathVariable(value = "id") Long id, Model model) {
 		Cliente cliente = null;
 		if (id > 0) {
-			cliente = clienteDao.findById(id).get();
+			cliente = clienteServiceImpl.findById(id).get();
 		} else {
 			return "redirect:/listar";
 		}
@@ -63,7 +62,7 @@ public class ClienteController {
 			model.addAttribute("titulo", "Formulario de cliente");
 			return "form";
 		}
-		clienteDao.save(cliente);
+		clienteServiceImpl.save(cliente);
 		sessionStatus.setComplete();
 		return "redirect:listar";
 	}
@@ -71,7 +70,7 @@ public class ClienteController {
 	@RequestMapping(value = {"/eliminar/{id}"})
 	public String eliminar(@PathVariable(value = "id")Long id) {
 		if(id > 0) {
-			clienteDao.deleteById(id);
+			clienteServiceImpl.deleteById(id);
 		}
 		return "redirect:/listar";
 	}
