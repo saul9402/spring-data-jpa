@@ -10,12 +10,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
 
+/**
+ * Con esta implementacion lo haces "a mano"
+ * 
+ * @author Saul Avila
+ *
+ */
 @Repository("clienteDaoJPA")
 public class ClienteDaoImpl implements IClienteDao {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly = true)
 	@Override

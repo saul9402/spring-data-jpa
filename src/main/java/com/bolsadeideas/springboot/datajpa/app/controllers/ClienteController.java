@@ -13,7 +13,7 @@ import com.bolsadeideas.springboot.datajpa.app.models.dao.IClienteDao;
 public class ClienteController {
 
 	@Autowired
-	@Qualifier("clienteDaoJPA")
+	@Qualifier("clienteDaoImplCrudRepository")
 	private IClienteDao clienteDao; 
 	
 	@RequestMapping(value = {"/listar"}, method = RequestMethod.GET)
