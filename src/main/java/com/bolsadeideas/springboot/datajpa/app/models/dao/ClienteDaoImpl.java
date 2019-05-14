@@ -1,6 +1,7 @@
 package com.bolsadeideas.springboot.datajpa.app.models.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,8 +32,25 @@ public class ClienteDaoImpl implements IClienteDao {
 
 	@Override
 	public Cliente save(Cliente cliente) {
-		em.persist(cliente);
+		
+		if(cliente.getId() != null && cliente.getId() > 0 ) {
+			em.merge(cliente);
+		}else {
+			em.persist(cliente);
+		}
 		return cliente;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<Cliente> findById(Long id) {
+		return Optional.ofNullable(em.find(Cliente.class, id));
+	}
+
+	@Override
+	@Transactional
+	public void deleteById(Long id) {
+		em.remove(findById(id).get());
 	}
 
 }
