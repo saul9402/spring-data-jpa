@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bolsadeideas.springboot.datajpa.app.models.dao.service.IClienteService;
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
@@ -40,14 +41,22 @@ public class ClienteController {
 	}
 
 	@GetMapping(value = {"/form/{id}"})
-	public String editar(@PathVariable(value = "id") Long id, Model model) {
+	public String editar(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
 		Cliente cliente = null;
+		System.out.println("TRAIGO EL ID: " + id);
 		if (id > 0) {
-			cliente = clienteServiceImpl.findById(id).get();
+			System.out.println("TRAIGO EL ID: " + id);
+			cliente = clienteServiceImpl.findById(id).orElse(null);
+			System.out.println("EL CLIENTE ES:" + cliente );
+			if(cliente == null) {
+				flash.addFlashAttribute("error", "El id del cliente no existe en la base de datos.");
+				return "redirect:/listar";
+			}
 		} else {
+			flash.addFlashAttribute("error", "El id del cliente no puede ser cero.");
 			return "redirect:/listar";
 		}
-		model.addAttribute("titulo", "Formulario de cliente");
+		model.addAttribute("titulo", "Formulario de cliente.");
 		model.addAttribute("cliente", cliente);
 		return "form";
 	}
@@ -56,20 +65,26 @@ public class ClienteController {
 	// si llegara a ser diferente el nombre de esta variable con respecto al nombre
 	// que se dió en el metodo crear se deberá usar la anotacion
 	// @ModelAttribute({nombre_con_que_se _mando} (sin llaves))
-	public String guardar(@Valid Cliente cliente, BindingResult result, Model model, SessionStatus sessionStatus) {
+	public String guardar(@Valid Cliente cliente, BindingResult result, Model model, RedirectAttributes flash, SessionStatus sessionStatus) {
 		if (result.hasErrors()) {
 			model.addAttribute("titulo", "Formulario de cliente");
 			return "form";
 		}
+		
+		String mensajeFlash = cliente.getId() != null ? "Cliente editado con éxito": "Cliente creado con éxito";
+		
 		clienteServiceImpl.save(cliente);
 		sessionStatus.setComplete();
+		//se utiliza para crear los mensajes que aparecen y desaparecen con cada petición
+		flash.addFlashAttribute("success", mensajeFlash);
 		return "redirect:listar";
 	}
 	
 	@RequestMapping(value = {"/eliminar/{id}"})
-	public String eliminar(@PathVariable(value = "id")Long id) {
+	public String eliminar(@PathVariable(value = "id")Long id,RedirectAttributes flash) {
 		if(id > 0) {
 			clienteServiceImpl.deleteById(id);
+			flash.addFlashAttribute("success", "Cliente eliminado con éxito");
 		}
 		return "redirect:/listar";
 	}
