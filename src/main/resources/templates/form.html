@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title th:text="${titulo}">Insert title here</title>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+	crossorigin="anonymous">
+</head>
+<meta charset="UTF-8" />
+<title th:text="${titulo}">Insert title here</title>
+</head>
+<body>
+	<h1 th:text="${titulo}"></h1>
+	<form th:action="@{/form}" th:object="${cliente}" method="post">
+		<table>
+			<tr>
+				<td>Nombre</td>
+				<td><input type="text" th:field="*{nombre}" /></td>
+			</tr>
+			<tr>
+				<td>Apellido</td>
+				<td><input type="text" th:field="*{apellido}" /></td>
+			</tr>
+			<tr>
+				<td>Email</td>
+				<td><input type="email" th:field=*{email} /></td>
+			</tr>
+			<tr>
+				<td> <input type="submit" value="Crear Cliente"/> </td>
+			</tr>
+		</table>
+		<input type="hidden" th:field=*{id} />
+	</form>
+</body>
+</html>

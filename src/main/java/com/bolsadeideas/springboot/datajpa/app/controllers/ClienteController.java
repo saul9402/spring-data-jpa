@@ -35,6 +35,7 @@ public class ClienteController {
 
 	@PostMapping(value = { "/form" })
 	public String guardar(Cliente cliente) {
+		System.out.println("LLEGUE CON: " + cliente);
 		clienteDao.save(cliente);
 		return "redirect:listar";
 	}
