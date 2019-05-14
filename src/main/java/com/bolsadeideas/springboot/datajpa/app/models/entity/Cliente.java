@@ -7,10 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "clientes")
@@ -26,14 +27,8 @@ public class Cliente implements Serializable {
 	private String apellido;
 	private String email;
 	@Temporal(TemporalType.TIMESTAMP)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date createAt;
-	
-	
-	@PrePersist
-	//se llama justo antes de llamar al metodo persist
-	public void prePersist() {
-		createAt = new Date();
-	}
 
 	public Long getId() {
 		return id;
