@@ -43,11 +43,8 @@ public class ClienteController {
 	@GetMapping(value = {"/form/{id}"})
 	public String editar(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
 		Cliente cliente = null;
-		System.out.println("TRAIGO EL ID: " + id);
 		if (id > 0) {
-			System.out.println("TRAIGO EL ID: " + id);
 			cliente = clienteServiceImpl.findById(id).orElse(null);
-			System.out.println("EL CLIENTE ES:" + cliente );
 			if(cliente == null) {
 				flash.addFlashAttribute("error", "El id del cliente no existe en la base de datos.");
 				return "redirect:/listar";
