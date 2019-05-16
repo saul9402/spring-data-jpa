@@ -1,18 +1,12 @@
 package com.bolsadeideas.springboot.datajpa.app.controllers;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +26,9 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.bolsadeideas.springboot.datajpa.app.models.dao.service.IClienteService;
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
+import com.bolsadeideas.springboot.datajpa.app.models.service.IClienteService;
+import com.bolsadeideas.springboot.datajpa.app.models.service.IUploadFileService;
 import com.bolsadeideas.springboot.datajpa.app.util.paginator.PageRender;
 
 @Controller
@@ -41,10 +36,11 @@ import com.bolsadeideas.springboot.datajpa.app.util.paginator.PageRender;
 @SessionAttributes({ "cliente" })
 public class ClienteController {
 
-	private static final String UPLOADS_FOLDER = "uploads";
-
 	@Autowired
 	private IClienteService clienteServiceImpl;
+
+	@Autowired
+	private IUploadFileService uploadFileServiceImpl;
 
 	@GetMapping(value = "/ver/{id}")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
@@ -111,25 +107,18 @@ public class ClienteController {
 		if (!foto.isEmpty()) {
 			if (cliente.getId() != null && cliente.getId() > 0 && cliente.getFoto() != null
 					&& cliente.getFoto().length() > 0) {
-				Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
-				File archivo = rootPath.toFile();
-				if (archivo.exists() && archivo.canRead()) {
-					archivo.delete();
-				}
-
+				uploadFileServiceImpl.delete(cliente.getFoto());
 			}
-			String uniqueFileName = UUID.randomUUID().toString() + foto.getOriginalFilename();
-			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(uniqueFileName);
-			Path rootAbsolutePath = rootPath.toAbsolutePath();
 
+			String uniqueFileName = null;
 			try {
-				// con esto se crea la imagen en el directorio del proyecto
-				Files.copy(foto.getInputStream(), rootAbsolutePath);
-				flash.addFlashAttribute("info", "Has subido correctamente '" + uniqueFileName + "'");
-				cliente.setFoto(uniqueFileName);
+				uniqueFileName = uploadFileServiceImpl.copy(foto);
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			flash.addFlashAttribute("info", "Has subido correctamente '" + uniqueFileName + "'");
+			cliente.setFoto(uniqueFileName);
 
 		}
 
@@ -149,13 +138,8 @@ public class ClienteController {
 			Cliente cliente = clienteServiceImpl.findById(id).orElse(null);
 			clienteServiceImpl.deleteById(id);
 			flash.addFlashAttribute("success", "Cliente eliminado con éxito");
-			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
-			File archivo = rootPath.toFile();
-
-			if (archivo.exists() && archivo.canRead()) {
-				if (archivo.delete()) {
-					flash.addFlashAttribute("info", "Foto " + cliente.getFoto() + " eliminada con éxito");
-				}
+			if (uploadFileServiceImpl.delete(cliente.getFoto())) {
+				flash.addFlashAttribute("info", "Foto " + cliente.getFoto() + " eliminada con éxito");
 			}
 		}
 		return "redirect:/listar";
@@ -163,13 +147,9 @@ public class ClienteController {
 
 	@GetMapping(value = "/uploads/{fileName:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String fileName) {
-		Path pathFoto = Paths.get(UPLOADS_FOLDER).resolve(fileName).toAbsolutePath();
 		Resource recurso = null;
 		try {
-			recurso = new UrlResource(pathFoto.toUri());
-			if (!recurso.exists() && !recurso.isReadable()) {
-				throw new RuntimeException("Error: no se puede cargar la imagen " + pathFoto.toString());
-			}
+			recurso = uploadFileServiceImpl.load(fileName);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}

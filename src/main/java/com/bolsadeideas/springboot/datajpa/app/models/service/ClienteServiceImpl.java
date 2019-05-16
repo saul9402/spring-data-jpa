@@ -1,4 +1,4 @@
-package com.bolsadeideas.springboot.datajpa.app.models.dao.service;
+package com.bolsadeideas.springboot.datajpa.app.models.service;
 
 import java.util.List;
 import java.util.Optional;
