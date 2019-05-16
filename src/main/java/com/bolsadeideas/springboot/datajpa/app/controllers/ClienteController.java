@@ -1,5 +1,6 @@
 package com.bolsadeideas.springboot.datajpa.app.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -39,6 +40,8 @@ import com.bolsadeideas.springboot.datajpa.app.util.paginator.PageRender;
 //con esto va a guardar en la sesion un atributo con el nombre cliente
 @SessionAttributes({ "cliente" })
 public class ClienteController {
+
+	private static final String UPLOADS_FOLDER = "uploads";
 
 	@Autowired
 	private IClienteService clienteServiceImpl;
@@ -106,8 +109,17 @@ public class ClienteController {
 			return "form";
 		}
 		if (!foto.isEmpty()) {
+			if (cliente.getId() != null && cliente.getId() > 0 && cliente.getFoto() != null
+					&& cliente.getFoto().length() > 0) {
+				Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
+				File archivo = rootPath.toFile();
+				if (archivo.exists() && archivo.canRead()) {
+					archivo.delete();
+				}
+
+			}
 			String uniqueFileName = UUID.randomUUID().toString() + foto.getOriginalFilename();
-			Path rootPath = Paths.get("uploads").resolve(uniqueFileName);
+			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(uniqueFileName);
 			Path rootAbsolutePath = rootPath.toAbsolutePath();
 
 			try {
@@ -134,15 +146,24 @@ public class ClienteController {
 	@RequestMapping(value = { "/eliminar/{id}" })
 	public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
 		if (id > 0) {
+			Cliente cliente = clienteServiceImpl.findById(id).orElse(null);
 			clienteServiceImpl.deleteById(id);
 			flash.addFlashAttribute("success", "Cliente eliminado con éxito");
+			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
+			File archivo = rootPath.toFile();
+
+			if (archivo.exists() && archivo.canRead()) {
+				if (archivo.delete()) {
+					flash.addFlashAttribute("info", "Foto " + cliente.getFoto() + " eliminada con éxito");
+				}
+			}
 		}
 		return "redirect:/listar";
 	}
 
 	@GetMapping(value = "/uploads/{fileName:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String fileName) {
-		Path pathFoto = Paths.get("uploads").resolve(fileName).toAbsolutePath();
+		Path pathFoto = Paths.get(UPLOADS_FOLDER).resolve(fileName).toAbsolutePath();
 		Resource recurso = null;
 		try {
 			recurso = new UrlResource(pathFoto.toUri());
