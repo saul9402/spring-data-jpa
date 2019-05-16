@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-	@Override
+	/*@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		WebMvcConfigurer.super.addResourceHandlers(registry);
 		// con esto se mapea todo lo que està haciendo referencia a /uploads/ a una ruta
@@ -18,6 +18,6 @@ public class MvcConfig implements WebMvcConfigurer {
 		// toUri, agrega el esquema "file:" a la ruta
 		String resourcePath = Paths.get("uploads").toAbsolutePath().toUri().toString();
 		registry.addResourceHandler("/uploads/**").addResourceLocations(resourcePath);
-	}
+	}*/
 
 }
