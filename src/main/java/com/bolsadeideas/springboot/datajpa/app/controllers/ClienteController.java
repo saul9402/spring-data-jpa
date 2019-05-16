@@ -1,5 +1,10 @@
 package com.bolsadeideas.springboot.datajpa.app.controllers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bolsadeideas.springboot.datajpa.app.models.dao.service.IClienteService;
@@ -31,13 +37,27 @@ public class ClienteController {
 	@Autowired
 	private IClienteService clienteServiceImpl;
 
+	@GetMapping(value = "/ver/{id}")
+	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
+
+		Cliente cliente = clienteServiceImpl.findById(id).orElse(null);
+		if (cliente == null) {
+			flash.addFlashAttribute("error", "el cliente no existe en la base de datos");
+			return "redirect:/listar";
+		}
+		model.addAttribute("cliente", cliente);
+		model.addAttribute("titulo", "Detalle cliente: " + cliente.getNombre());
+		System.out.println("EL CLIENTE ES: " + cliente.toString());
+		return "ver";
+	}
+
 	@RequestMapping(value = { "/listar" }, method = RequestMethod.GET)
 	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
 		Pageable pageRequest = PageRequest.of(page, 4);
 		Page<Cliente> clientes = clienteServiceImpl.findAll(pageRequest);
-		
+
 		PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
-		
+
 		model.addAttribute("titulo", "Listado de clientes");
 		model.addAttribute("clientes", clientes);
 		model.addAttribute("page", pageRender);
@@ -73,11 +93,26 @@ public class ClienteController {
 	// si llegara a ser diferente el nombre de esta variable con respecto al nombre
 	// que se dió en el metodo crear se deberá usar la anotacion
 	// @ModelAttribute({nombre_con_que_se _mando} (sin llaves))
-	public String guardar(@Valid Cliente cliente, BindingResult result, Model model, RedirectAttributes flash,
-			SessionStatus sessionStatus) {
+	public String guardar(@Valid Cliente cliente, BindingResult result, Model model,
+			@RequestParam("file") MultipartFile foto, RedirectAttributes flash, SessionStatus sessionStatus) {
 		if (result.hasErrors()) {
 			model.addAttribute("titulo", "Formulario de cliente");
 			return "form";
+		}
+		if (!foto.isEmpty()) {
+			Path directorioRecursos = Paths.get("src//main//resources//static//uploads");
+			String rootPath = directorioRecursos.toFile().getAbsolutePath();
+			try {
+				// con esto se crea la imagen en el directorio del proyecto
+				byte[] bytes = foto.getBytes();
+				Path rutaCompleta = Paths.get(rootPath + "//" + foto.getOriginalFilename());
+				Files.write(rutaCompleta, bytes);
+				flash.addFlashAttribute("info", "Has subido correctamente '" + foto.getOriginalFilename() + "'");
+				cliente.setFoto(foto.getOriginalFilename());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 
 		String mensajeFlash = cliente.getId() != null ? "Cliente editado con éxito" : "Cliente creado con éxito";

@@ -28,18 +28,20 @@ public class Cliente implements Serializable {
 
 	@NotEmpty
 	private String nombre;
-	
+
 	@NotEmpty
 	private String apellido;
-	
+
 	@NotEmpty
 	@Email
 	private String email;
-	
+
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date createAt;
+
+	private String foto;
 
 	public Long getId() {
 		return id;
@@ -79,6 +81,33 @@ public class Cliente implements Serializable {
 
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
+	}
+
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Cliente [id=");
+		builder.append(id);
+		builder.append(", nombre=");
+		builder.append(nombre);
+		builder.append(", apellido=");
+		builder.append(apellido);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", createAt=");
+		builder.append(createAt);
+		builder.append(", foto=");
+		builder.append(foto);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }
