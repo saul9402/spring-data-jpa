@@ -55,7 +55,10 @@ public class Cliente implements Serializable {
 	 * Con mappedBy se indica que será bidireccional y al mismo tiempo indicamos que
 	 * Cliente será el "owner" (propietario) de la relación
 	 */
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "cliente")
+	/**
+	 * orphanRemoval sirve para quitar registros de facturas que no esten asociados a ningun cliente  
+	 */
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "cliente", orphanRemoval = true)
 	private List<Factura> facturas;
 
 	private String foto;
