@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bolsadeideas.springboot.datajpa.app.models.dao.IClienteDao;
+import com.bolsadeideas.springboot.datajpa.app.models.dao.IProductoDao;
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
+import com.bolsadeideas.springboot.datajpa.app.models.entity.Producto;
 
 @Service
 public class ClienteServiceImpl implements IClienteService {
@@ -19,6 +21,9 @@ public class ClienteServiceImpl implements IClienteService {
 	@Autowired
 	@Qualifier("clienteDaoImplCrudRepository")
 	private IClienteDao clienteDao;
+
+	@Autowired
+	private IProductoDao productoDao;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -49,6 +54,12 @@ public class ClienteServiceImpl implements IClienteService {
 	@Transactional(readOnly = true)
 	public Page<Cliente> findAll(Pageable pageable) {
 		return clienteDao.findAll(pageable);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Producto> findByName(String term) {
+		return productoDao.findByNombreLikeIgnoreCase("%" + term + "%");
 	}
 
 }
