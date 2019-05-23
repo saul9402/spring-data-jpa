@@ -32,7 +32,7 @@ public class ItemFactura implements Serializable {
 	 */
 	@JoinColumn(name = "producto_id")
 	private Producto producto;
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -51,6 +51,14 @@ public class ItemFactura implements Serializable {
 
 	public Double calcularImporte() {
 		return cantidad.doubleValue() * producto.getPrecio();
+	}
+
+	public Producto getProducto() {
+		return producto;
+	}
+
+	public void setProducto(Producto producto) {
+		this.producto = producto;
 	}
 
 }

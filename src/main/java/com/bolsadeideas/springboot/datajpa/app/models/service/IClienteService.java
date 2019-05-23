@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
+import com.bolsadeideas.springboot.datajpa.app.models.entity.Factura;
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Producto;
 
 public interface IClienteService {
@@ -22,5 +23,9 @@ public interface IClienteService {
 	public void deleteById(Long id);
 	
 	public List<Producto> findByName(String term);
+	
+	public void saveFactura(Factura factura);
+	
+	public Producto findProductoById(Long id);
 	
 }
