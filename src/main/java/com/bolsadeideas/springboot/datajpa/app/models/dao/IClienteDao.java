@@ -7,9 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
 
+@Repository
 public interface IClienteDao extends PagingAndSortingRepository<Cliente, Long> {
 
 	public List<Cliente> findAll();

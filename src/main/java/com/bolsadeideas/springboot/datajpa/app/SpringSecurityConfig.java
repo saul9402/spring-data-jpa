@@ -1,18 +1,16 @@
 package com.bolsadeideas.springboot.datajpa.app;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.bolsadeideas.springboot.datajpa.app.auth.handler.LoginSuccessHandler;
+import com.bolsadeideas.springboot.datajpa.app.models.service.JpaUserDetailsService;
 
 //esta anotacion es importante para habilitar el uso de anotaciones en los metodos y sustituye a la configuracion que se ve comentada aqui
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -22,11 +20,19 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private LoginSuccessHandler successHandler;
 
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	
+	@Autowired
+	private JpaUserDetailsService jpaUserDetailsService;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.authorizeRequests().antMatchers("/", "/css/**", "/js/**", "/images/**", "/listar").permitAll()
 				/*
+				 * Lo que está aqui se sustituye por las anotaciones @Secured y @PreAuthorize
 				 * .antMatchers("/uploads/** ").hasAnyRole("USER")
 				 * .antMatchers("/ver/**").hasAnyRole("USER")
 				 * .antMatchers("/form/**").hasAnyRole("ADMIN").antMatchers("/eliminar/**").
@@ -36,14 +42,30 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll().and().logout().permitAll().and().exceptionHandling().accessDeniedPage("/error_403");
 	}
 
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
 	@Autowired
 	public void configurerGlobal(AuthenticationManagerBuilder builder) throws Exception {
-		PasswordEncoder encoder = passwordEncoder();
+		
+		/**JPA AUTHENTICATION
+		 * 
+		 */
+		
+		builder.userDetailsService(jpaUserDetailsService)
+		.passwordEncoder(passwordEncoder);
+		
+		/**
+		 * JDBC AUTHENTICATION
+		 */
+		/*builder.jdbcAuthentication()
+		.dataSource(dataSource)
+		.passwordEncoder(passwordEncoder)
+		.usersByUsernameQuery("select username, password, enabled from users where username = ?")
+		.authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id = u.id) where u.username = ?");*/
+		
+		
+		/**
+		 * Inmemory authentication
+		 */
+		/*PasswordEncoder encoder = passwordEncoder;*/
 		/*
 		 * Forma 1 UserBuilder users = User.builder().passwordEncoder(password -> {
 		 * return encoder.encode(password); });
@@ -56,10 +78,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 		/*
 		 * Forma 3 la más bonita, :3
 		 */
-		UserBuilder users = User.builder().passwordEncoder(encoder::encode);
+		/*UserBuilder users = User.builder().passwordEncoder(encoder::encode);*/
 
-		builder.inMemoryAuthentication().withUser(users.username("admin").password("12345").roles("ADMIN", "USER"))
-				.withUser(users.username("andres").password("12345").roles("USER"));
+		/*builder.inMemoryAuthentication().withUser(users.username("admin").password("12345").roles("ADMIN", "USER"))
+				.withUser(users.username("andres").password("12345").roles("USER"));*/
 
 	}
 
