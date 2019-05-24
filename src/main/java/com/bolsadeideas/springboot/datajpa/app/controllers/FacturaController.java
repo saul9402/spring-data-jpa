@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,7 @@ import com.bolsadeideas.springboot.datajpa.app.models.service.IClienteService;
 @Controller
 @RequestMapping(value = "/factura")
 @SessionAttributes({ "factura" })
+@Secured("ROLE_ADMIN")
 public class FacturaController {
 
 	@Autowired
