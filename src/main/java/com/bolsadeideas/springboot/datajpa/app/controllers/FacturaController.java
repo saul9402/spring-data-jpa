@@ -25,10 +25,13 @@ import com.bolsadeideas.springboot.datajpa.app.models.entity.ItemFactura;
 import com.bolsadeideas.springboot.datajpa.app.models.entity.Producto;
 import com.bolsadeideas.springboot.datajpa.app.models.service.IClienteService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
 @RequestMapping(value = "/factura")
 @SessionAttributes({ "factura" })
 @Secured("ROLE_ADMIN")
+@Slf4j
 public class FacturaController {
 
 	@Autowired
@@ -90,7 +93,7 @@ public class FacturaController {
 			linea.setCantidad(cantidad[i]);
 			factura.addItemFactura(linea);
 
-			System.out.println("ID: " + itemId[i].toString() + ", cantidad: " + cantidad[i].toString());
+			log.info("ID: " + itemId[i].toString() + ", cantidad: " + cantidad[i].toString());
 		}
 
 		clienteService.saveFactura(factura);

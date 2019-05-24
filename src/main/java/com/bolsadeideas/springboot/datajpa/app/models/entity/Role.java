@@ -9,12 +9,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
 /*
  * Se genera un constraint o restriccion donde indicas que la combinacion de
  * user_id y authority es única
  */
 @Table(name = "authorities", uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "authority" }) })
+@Data
+@NoArgsConstructor
 public class Role implements Serializable {
 
 	/**
@@ -28,20 +33,6 @@ public class Role implements Serializable {
 
 	private String authority;
 
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getAuthority() {
-		return authority;
-	}
-
-	public void setAuthority(String authority) {
-		this.authority = authority;
-	}
 
 }
