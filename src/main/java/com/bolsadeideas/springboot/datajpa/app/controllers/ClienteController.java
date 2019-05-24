@@ -3,11 +3,13 @@ package com.bolsadeideas.springboot.datajpa.app.controllers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,9 +43,12 @@ import com.bolsadeideas.springboot.datajpa.app.models.service.IClienteService;
 import com.bolsadeideas.springboot.datajpa.app.models.service.IUploadFileService;
 import com.bolsadeideas.springboot.datajpa.app.util.paginator.PageRender;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Controller
 //con esto va a guardar en la sesion un atributo con el nombre cliente
 @SessionAttributes({ "cliente" })
+@Slf4j
 public class ClienteController {
 
 	@Autowired
@@ -51,6 +56,9 @@ public class ClienteController {
 
 	@Autowired
 	private IUploadFileService uploadFileServiceImpl;
+
+	@Autowired
+	private MessageSource messageSource;
 
 	@GetMapping(value = "/ver/{id}")
 //	@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
@@ -69,34 +77,27 @@ public class ClienteController {
 
 	@RequestMapping(value = { "", "/", "/listar" }, method = RequestMethod.GET)
 	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
-			Authentication authentication, HttpServletRequest request) {
-
+			Authentication authentication, HttpServletRequest request, Locale locale) {
 		if (authentication != null) {
-			System.out.println("El username es: " + authentication.getName());
+			log.info("El username es: {}", authentication.getName());
 		}
 
 		// formas diferentes de obtener lo mismo
 		// Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		if (hasRole("ROLE_ADMIN")) {
-			System.out.println("Hola ".concat(authentication.getName().concat(" tienes acceso")));
-		} else {
-			System.out.println("Hola ".concat(authentication.getName().concat(" NO tienes acceso")));
+			log.info("Hola {} tienes acceso", authentication.getName());
 		}
 
 		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request,
 				"ROLE_");
 
 		if (securityContext.isUserInRole("ADMIN")) {
-			System.out.println("USANDO WRAPPER El username es: " + authentication.getName());
-		} else {
-			System.out.println("USANDO WRAPPER El username es: " + authentication.getName());
+			log.info("USANDO WRAPPER El username es: {} ", authentication.getName());
 		}
 
 		if (request.isUserInRole("ROLE_ADMIN")) {
-			System.out.println("USANDO SERVLET REQUEST El username es: " + authentication.getName());
-		} else {
-			System.out.println("USANDO SERVLET REQUEST El username es: " + authentication.getName());
+			log.info("USANDO SERVLET REQUEST El username es: {} ", authentication.getName());
 		}
 
 		Pageable pageRequest = PageRequest.of(page, 4);
@@ -104,7 +105,7 @@ public class ClienteController {
 
 		PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
 
-		model.addAttribute("titulo", "Listado de clientes");
+		model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
 		model.addAttribute("clientes", clientes);
 		model.addAttribute("page", pageRender);
 		return "listar";
@@ -189,7 +190,7 @@ public class ClienteController {
 		return "redirect:/listar";
 	}
 
-	@Secured({"ROLE_USER", "ROLE_ADMIN"})
+	@Secured({ "ROLE_USER", "ROLE_ADMIN" })
 	@GetMapping(value = "/uploads/{fileName:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String fileName) {
 		Resource recurso = null;
