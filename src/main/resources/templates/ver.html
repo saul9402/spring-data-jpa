@@ -4,6 +4,8 @@
 </head>
 <body>
 	<header th:replace="layout/layout :: header"></header>
+	
+	<div id="i18n_eliminar_factura" th:utext="#{text.cliente.factura.eliminarOk}" style="display: none;""> </div>
 
 	<div class="container py-4">
 		<div class="card bg-light">
@@ -52,7 +54,7 @@
 							<td sec:authorize="hasRole('ROLE_ADMIN')"><a class="btn btn-danger btn-sm"
 								th:href="@{/factura/eliminar/__${factura.id}__}"
 								th:text="'eliminar'"
-								onclick="return confirm('¿est&acutes seguro que deseas eliminar la factura?');"></a></td>
+								onclick="return confirm(document.getElemetById('i18n_eliminar_factura').innerHTML);"></a></td>
 						</tr>
 					</tbody>
 				</table>

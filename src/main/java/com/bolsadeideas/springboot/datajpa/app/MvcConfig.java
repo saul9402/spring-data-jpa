@@ -1,6 +1,5 @@
 package com.bolsadeideas.springboot.datajpa.app;
 
-
 import java.util.Locale;
 
 import org.springframework.context.annotation.Bean;
@@ -15,8 +14,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
-	
-	
+
 	/*
 	 * Cifrador para las contraseñas
 	 */
@@ -25,37 +23,49 @@ public class MvcConfig implements WebMvcConfigurer {
 		return new BCryptPasswordEncoder();
 	}
 
+	/*
+	 * @Override public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	 * WebMvcConfigurer.super.addResourceHandlers(registry); // con esto se mapea
+	 * todo lo que està haciendo referencia a /uploads/ a una ruta // externa que en
+	 * este caso seria file:/C:/Temp/uploads/ (se configura como // recurso
+	 * estatico) // toUri, agrega el esquema "file:" a la ruta String resourcePath =
+	 * Paths.get("uploads").toAbsolutePath().toUri().toString();
+	 * registry.addResourceHandler("/uploads/**").addResourceLocations(resourcePath)
+	 * ; }
+	 */
 
-	/*@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		WebMvcConfigurer.super.addResourceHandlers(registry);
-		// con esto se mapea todo lo que està haciendo referencia a /uploads/ a una ruta
-		// externa que en este caso seria file:/C:/Temp/uploads/ (se configura como
-		// recurso estatico)
-		// toUri, agrega el esquema "file:" a la ruta
-		String resourcePath = Paths.get("uploads").toAbsolutePath().toUri().toString();
-		registry.addResourceHandler("/uploads/**").addResourceLocations(resourcePath);
-	}*/
-	
 	/*
 	 * VISTA DE ERROR PARA ACCESO DENEGADO
 	 */
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/error_403").setViewName("error_403");
-		
+
 	}
-	
+
 	/*
 	 * INTERNACIONALIZACION
+	 */
+
+	/**
+	 * Con este bean se configura el idioma por defecto que se utilizará en la
+	 * aplicación
+	 * 
+	 * @return
 	 */
 	@Bean
 	public LocaleResolver localeResolver() {
 		SessionLocaleResolver sessionLocaleResolver = new SessionLocaleResolver();
-		//se pone el idioma y despues el país es_ES
+		// se pone el idioma y despues el país es_ES
 		sessionLocaleResolver.setDefaultLocale(new Locale("es", "ES"));
 		return sessionLocaleResolver;
 	}
-	
+
+	/**
+	 * Aqui es donde se crea el interceptor que procesara el idioma segpun un
+	 * parametro llamado lang, por defecto el idioma será español
+	 * 
+	 * @return
+	 */
 	@Bean
 	public LocaleChangeInterceptor localeChangeInterceptor() {
 		LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
@@ -63,12 +73,12 @@ public class MvcConfig implements WebMvcConfigurer {
 		return localeChangeInterceptor;
 	}
 
-
+	/**
+	 * Se agrega el interceptor creado para procesaor el idioma
+	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(localeChangeInterceptor());
 	}
-	
-	
 
 }

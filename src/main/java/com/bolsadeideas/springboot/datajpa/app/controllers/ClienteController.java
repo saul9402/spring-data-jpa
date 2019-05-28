@@ -60,7 +60,7 @@ public class ClienteController {
 	@Autowired
 	private MessageSource messageSource;
 
-	@GetMapping(value = "/ver/{id}")
+	@GetMapping(value = "/ver/{id}")	
 //	@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
@@ -159,7 +159,6 @@ public class ClienteController {
 			try {
 				uniqueFileName = uploadFileServiceImpl.copy(foto);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			flash.addFlashAttribute("info", "Has subido correctamente '" + uniqueFileName + "'");
