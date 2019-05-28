@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -30,12 +32,16 @@ public class ItemFactura implements Serializable {
 	/**
 	 * Indica que muchos items factura pueden pertenecer a un mismo producto
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
 	/**
 	 * Se creara en esta tabla (facturas_items) la llave foranea de producto y se
 	 * especifica su nombre. Aunque se puede omitir.
 	 */
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "producto_id")
+	/**
+	 *@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) ayudará para evitar poner a EAGER el atributo 
+	 */
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	private Producto producto;
 
 	public Double calcularImporte() {

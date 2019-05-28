@@ -19,12 +19,18 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Data;
 
 @Entity
 @Table(name = "facturas")
 @Data
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Factura implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -47,6 +53,16 @@ public class Factura implements Serializable {
 	 */
 	/** Indica que tenemos muchas facturas asociadas a un solo cliente. */
 	@ManyToOne(fetch = FetchType.LAZY)
+	/**
+	 * Con @XmlTransient omites este atributo cuando se serializa el xml
+	 */
+	@XmlTransient
+	/**
+	 * Con @JsonBackReference ayuda a que la relacion al hacer el json sea solo de
+	 * cliente a factura. Indica que es la parte trasera o secundaria de la
+	 * referencia
+	 */
+	@JsonBackReference
 	private Cliente cliente;
 
 	/**

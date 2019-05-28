@@ -21,6 +21,9 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.Data;
 
 @Entity
@@ -47,6 +50,7 @@ public class Cliente implements Serializable {
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createAt;
 
 	/**
@@ -59,9 +63,17 @@ public class Cliente implements Serializable {
 	 * Cliente será el "owner" (propietario) de la relación
 	 */
 	/**
-	 * orphanRemoval sirve para quitar registros de facturas que no esten asociados a ningun cliente  
+	 * orphanRemoval sirve para quitar registros de facturas que no esten asociados
+	 * a ningun cliente
 	 */
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "cliente", orphanRemoval = true)
+	/**
+	 * La anotación @JsonManagedReference se usa para evitar el loop que se genera
+	 * por la relación bidireccional que existe entre factura y cliente. ayuda a que
+	 * la relacion al hacer el json sea solo de cliente a factura. Indica que es la
+	 * parte "delantera de la referencia"
+	 */
+	@JsonManagedReference
 	private List<Factura> facturas;
 
 	private String foto;

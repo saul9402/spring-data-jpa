@@ -7,6 +7,8 @@ spring:
         pdf: application/pdf
         xlsx: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
         csv: text/csv
+        xml: application/xml
+        json: application/json
   servlet:
     multipart:
       max-file-size: 10MB
