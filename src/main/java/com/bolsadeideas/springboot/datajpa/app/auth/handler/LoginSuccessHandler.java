@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 	@Autowired
-	private MessageSource messages;
+	private MessageSource messagesSource;
 
 	@Autowired
 	private LocaleResolver localeResolver;
@@ -40,7 +40,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		 * Como no se puede inyectar el Locale directamente se pide aparti del request
 		 */
 		Locale locale = localeResolver.resolveLocale(request);
-		String mensaje = String.format(messages.getMessage("text.login.success", null, locale),
+		String mensaje = String.format(messagesSource.getMessage("text.login.success", null, locale),
 				authentication.getName());
 
 		flashMap.put("success", mensaje);

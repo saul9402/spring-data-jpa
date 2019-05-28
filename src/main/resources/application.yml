@@ -1,4 +1,12 @@
 spring:
+  #esto permite agregar un parametro en la url para poder escoger el formato en que se va a ver la informacion (PDF, XML, etc...)
+  mvc:
+    contentnegotiation:
+      favor-parameter: true
+      media-types:
+        pdf: application/pdf
+        xlsx: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+        csv: text/csv
   servlet:
     multipart:
       max-file-size: 10MB
