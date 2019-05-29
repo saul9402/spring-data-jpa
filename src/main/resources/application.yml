@@ -1,5 +1,5 @@
 spring:
-  #esto permite agregar un parametro en la url para poder escoger el formato en que se va a ver la informacion (PDF, XML, etc...)
+  #esto permite agregar un parametro en la url para poder escoger el formato en que se va a ver la informacion (PDF, XML, JSON, etc...)
   mvc:
     contentnegotiation:
       favor-parameter: true

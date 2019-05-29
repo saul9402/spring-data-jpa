@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,6 +43,7 @@ import com.bolsadeideas.springboot.datajpa.app.models.entity.Cliente;
 import com.bolsadeideas.springboot.datajpa.app.models.service.IClienteService;
 import com.bolsadeideas.springboot.datajpa.app.models.service.IUploadFileService;
 import com.bolsadeideas.springboot.datajpa.app.util.paginator.PageRender;
+import com.bolsadeideas.springboot.datajpa.app.view.xml.ClienteList;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,7 +62,7 @@ public class ClienteController {
 	@Autowired
 	private MessageSource messageSource;
 
-	@GetMapping(value = "/ver/{id}")	
+	@GetMapping(value = "/ver/{id}")
 //	@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public String ver(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
@@ -73,6 +75,17 @@ public class ClienteController {
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("titulo", "Detalle cliente: " + cliente.getNombre());
 		return "ver";
+	}
+
+	@GetMapping(value = "/listar-rest")
+	public @ResponseBody ClienteList listarRest() {
+		/**
+		 * Se debe poner asi ya que si es necesario usar xml se necesita un wrapper que
+		 * contenga la lista de clientes, de lo contrario el xml se rompe. Al hacer esto
+		 * en la URL, entonces, se debe mandar el parametro "?format=json" para renderizar
+		 * json ya que por defecto será xml.
+		 */
+		return new ClienteList(clienteServiceImpl.findAll());
 	}
 
 	@RequestMapping(value = { "", "/", "/listar" }, method = RequestMethod.GET)
