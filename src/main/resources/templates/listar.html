@@ -19,6 +19,7 @@
 					<thead>
 						<tr>
 							<th sec:authorize="hasRole('ROLE_USER')" >ID</th>
+							<th th:text="#{text.cliente.nombre}">NOMBRE</th>
 							<th th:text="#{text.cliente.apellido}">APELLIDO</th>
 							<th th:text="#{text.cliente.email}">EMAIL</th>
 							<th th:text="#{text.cliente.createAt}">FECHA</th>

@@ -15,22 +15,22 @@ spring:
       max-request-size: 10MB
 #mysql://{usuario}:{contraseña}@{servidor}/{base_de_datos}
 #mysql://b6ea542e0e1444:cf6add5b@us-cdbr-iron-east-02.cleardb.net/heroku_f2e49ab25628454?reconnect=true
-#se descomenta para usar mysql
-#  datasource:
-#    url: jdbc:mysql://us-cdbr-iron-east-02.cleardb.net/heroku_f2e49ab25628454?reconnect=true
-#    username: b6ea542e0e1444
-#    password: cf6add5b
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+#se descomenta para usar mysql eh heroku
+  datasource:
+    url: jdbc:mysql://us-cdbr-iron-east-02.cleardb.net/heroku_f2e49ab25628454?reconnect=true
+    username: b6ea542e0e1444
+    password: cf6add5b
+    driver-class-name: com.mysql.cj.jdbc.Driver
 #  jpa:
 #    database-platform: org.hibernate.dialect.MySQL8Dialect
 #    hibernate:
 #      ddl-auto: create-drop
 #Se comenta para usar h2 y desplegar en HEROKU sin usar mySql ya que esa configuracion pide tarjeta de crédito
-  datasource:
-    url: jdbc:mysql://localhost/db_springboot?serverTimezone=America/Mexico_City
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+#  datasource:
+#    url: jdbc:mysql://localhost/db_springboot?serverTimezone=America/Mexico_City
+#    username: root
+#    password: root
+#    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
 #    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
